@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digit Classifier</title>
+</head>
+<body>
+    <input type="file" id="imageInput" accept="image/*">
+    
+    <button onclick="uploadImage()">Clasifica</button>
+    
+    <p id="predictionResult"></p>
+
+    <script type="text/javascript">
+        // Función asincrónica para no bloquear la página mientras se espera a la API
+        async function uploadImage() {
+            // Obtiene la referencia al elemento input de la imagen
+            const input = document.getElementById('imageInput');
+            
+            // Validación: verifica si el usuario realmente seleccionó un archivo
+            if (!input.files[0]){
+                alert("Por favor selecciona un archivo para subir!")
+                return;
+            }
+
+            // Selecciona el primer archivo de la lista (el input podría permitir múltiples)
+            const file = input.files[0]
+            
+            // FormData es un objeto que emula el envío de un formulario HTML clásico.
+            // Es necesario para enviar archivos binarios por método POST.
+            const formData = new FormData;
+            // 'file' debe coincidir con el nombre del parámetro en FastAPI: (file: UploadFile)
+            formData.append('file', file)
+
+            // Bloque try-catch para capturar errores de red o del servidor
+            try {
+                // 3. COMUNICACIÓN CON EL BACKEND (Fetch)
+                // Realiza la petición HTTP a la dirección local donde corre FastAPI
+                const response = await fetch('http://127.0.0.1:8000/predict-image/', {
+                    method: 'POST', // El método debe ser POST para enviar datos
+                    body: formData  // Adjunta el archivo en el cuerpo de la petición
+                });
+                
+                // Espera a que la respuesta se convierta de JSON a un objeto JavaScript
+                const result = await response.json()
+                
+                // 4. MOSTRAR RESULTADOS
+                // Accede a la propiedad 'prediction' del JSON enviado por FastAPI y la pinta en pantalla
+                document.getElementById('predictionResult').textContent = `Predicción: ${result.prediction}`;
+            } catch (error) {
+                // Si la API está apagada o hay problemas de red, se muestra en la consola
+                console.error('Error:', error);
+                alert('Failed!')
+            }
+        }
+    </script>
+</body>
+</html>
