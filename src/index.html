@@ -37,7 +37,7 @@
             try {
                 // 3. COMUNICACIÓN CON EL BACKEND (Fetch)
                 // Realiza la petición HTTP a la dirección local donde corre FastAPI
-                const response = await fetch('http://127.0.0.1:8000/predict-image/', {
+                const response = await fetch('https://literate-telegram-4jg9j944wppp37gvg-8000.app.github.dev/predict-image/', {
                     method: 'POST', // El método debe ser POST para enviar datos
                     body: formData  // Adjunta el archivo en el cuerpo de la petición
                 });
